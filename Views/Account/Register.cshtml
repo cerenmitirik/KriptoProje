@@ -10,25 +10,25 @@
                     <h3 class="font-weight-light my-2">Yeni Hesap Oluştur</h3>
                     <small>Verileriniz SHA-256 ile şifrelenerek saklanır.</small>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <form asp-action="Register" method="post">
-                        <div class="form-floating mb-3">
-                            <label for="username">Kullanıcı Adı</label>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Kullanıcı Adı</label>
                             <input class="form-control" name="username" type="text" placeholder="Kullanıcı adınızı giriniz" required />
                         </div>
                         
-                        <div class="form-floating mb-3">
-                            <label for="email">E-posta Adresi</label>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">E-posta Adresi</label>
                             <input class="form-control" name="email" type="email" placeholder="isim@ornek.com" required />
                         </div>
 
-                        <div class="form-floating mb-3">
-                            <label for="password">Şifre</label>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Şifre</label>
                             <input class="form-control" name="password" type="password" placeholder="Güçlü bir şifre seçin" required />
                         </div>
 
                         <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-primary btn-block shadow-sm">
+                            <button type="submit" class="btn btn-primary shadow-sm">
                                 <i class="fas fa-user-plus"></i> Kaydı Tamamla
                             </button>
                         </div>
