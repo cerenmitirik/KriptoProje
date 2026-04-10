@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Kullanıcı Kaydı";
+    ViewData["Title"] = "Kullanıcı Girişi";
 }
 
 <div class="container mt-5">
@@ -7,41 +7,56 @@
         <div class="col-md-6 mb-5">
             <div class="card shadow-xl border-0 auth-card">
                 <div class="card-header text-center py-4">
-                    <h3 class="fw-bold my-2" style="color: #1e293b;">Yeni Hesap Oluştur</h3>
-                    <small class="text-muted">Verileriniz SHA-256 ile şifrelenerek saklanır.</small>
+                    <h3 class="fw-bold my-2" style="color: #1e293b;">Oturum Aç</h3>
+                    <small class="text-muted">Güvenli erişim için bilgilerinizi girin.</small>
                 </div>
                 <div class="card-body p-4 pt-2">
-                    <form id="authForm" asp-action="Register" method="post">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach (var modelState in ViewData.ModelState.Values)
+                                {
+                                    foreach (var error in modelState.Errors)
+                                    {
+                                        <li>@error.ErrorMessage</li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <form id="authForm" asp-action="Login" method="post">
                         <div class="mb-3">
                             <label class="form-label fw-bold">Kullanıcı Adı</label>
                             <input class="form-control" name="username" type="text" placeholder="Kullanıcı adınızı giriniz" required />
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label fw-bold">E-posta Adresi</label>
-                            <input class="form-control" name="email" type="email" placeholder="isim@ornek.com" required />
-                        </div>
-
-                        <div class="mb-3">
                             <label class="form-label fw-bold">Şifre</label>
                             <div class="input-group">
-                                <input class="form-control" id="passwordInput" name="password" type="password" placeholder="Güçlü bir şifre seçin" required />
+                                <input class="form-control" id="passwordInput" name="password" type="password" placeholder="Şifrenizi giriniz" required />
                                 <button class="btn btn-outline-secondary" type="button" id="togglePasswordBtn">
                                     <i class="bi bi-eye" id="togglePasswordIcon" style="color: #64748B;"></i>
                                 </button>
                             </div>
                         </div>
 
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="rememberMe" name="rememberMe" value="true">
+                            <label class="form-check-label" for="rememberMe">Beni Hatırla</label>
+                        </div>
+
                         <div class="d-grid gap-2 mt-4">
                             <button type="submit" id="submitBtn" class="btn btn-primary shadow-sm py-2">
-                                <i class="bi bi-person-plus"></i> Kaydı Tamamla
+                                <i class="bi bi-box-arrow-in-right"></i> Giriş Yap
                             </button>
                         </div>
                     </form>
                 </div>
                 <div class="card-footer text-center py-3">
-                    <div class="small text-muted text-uppercase" style="font-size: 0.7rem;">
-                        Kriptografi Ödevi - Güvenli Veri Yönetimi
+                    <div class="small">
+                        Hesabınız yok mu? <a asp-action="Register" class="text-decoration-none fw-bold">Kayıt Ol</a>
                     </div>
                 </div>
             </div>
@@ -52,7 +67,6 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Şifre Göster/Gizle
             const togglePasswordBtn = document.getElementById('togglePasswordBtn');
             const passwordInput = document.getElementById('passwordInput');
             const togglePasswordIcon = document.getElementById('togglePasswordIcon');
@@ -61,20 +75,22 @@
                 togglePasswordBtn.addEventListener('click', function () {
                     const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
                     passwordInput.setAttribute('type', type);
-                    // İkonu değiştir
                     togglePasswordIcon.classList.toggle('bi-eye');
                     togglePasswordIcon.classList.toggle('bi-eye-slash');
                 });
             }
 
-            // Form Submit Spinner
             const authForm = document.getElementById('authForm');
             const submitBtn = document.getElementById('submitBtn');
 
             if (authForm) {
                 authForm.addEventListener('submit', function () {
+                    // Butonu devre dışı bırak ve içeriğini spinner ile değiştir
                     submitBtn.disabled = true;
                     submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> İşleniyor...';
+                    
+                    // Formun submit edilebilmesi için ufak bir bekleme (opsiyonel, genelde anında yollar)
+                    // disabled true yapıldığı için çift tıklama engellenmiş olur.
                 });
             }
         });
