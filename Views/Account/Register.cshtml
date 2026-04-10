@@ -1,0 +1,45 @@
+@{
+    ViewData["Title"] = "Kullanıcı Kaydı";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3 class="font-weight-light my-2">Yeni Hesap Oluştur</h3>
+                    <small>Verileriniz SHA-256 ile şifrelenerek saklanır.</small>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Register" method="post">
+                        <div class="form-floating mb-3">
+                            <label for="username">Kullanıcı Adı</label>
+                            <input class="form-control" name="username" type="text" placeholder="Kullanıcı adınızı giriniz" required />
+                        </div>
+                        
+                        <div class="form-floating mb-3">
+                            <label for="email">E-posta Adresi</label>
+                            <input class="form-control" name="email" type="email" placeholder="isim@ornek.com" required />
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <label for="password">Şifre</label>
+                            <input class="form-control" name="password" type="password" placeholder="Güçlü bir şifre seçin" required />
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-block shadow-sm">
+                                <i class="fas fa-user-plus"></i> Kaydı Tamamla
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center py-3">
+                    <div class="small text-muted text-uppercase" style="font-size: 0.7rem;">
+                        Kriptografi Ödevi - Güvenli Veri Yönetimi
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
