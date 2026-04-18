@@ -20,25 +20,42 @@ public class AccountController : Controller
     public IActionResult Register() => View();
 
     [HttpPost]
-    public IActionResult Register(string username, string email, string password)
+public IActionResult Register(string username, string email, string password)
+{
+    // 1. KONTROL: Bu kullanıcı adı zaten var mı?
+    var isUserExists = _context.Users.Any(u => u.Username == username);
+    
+    if (isUserExists)
     {
-        // Şifreyi HashHelper ile mühürle
-        HashHelper.CreatePasswordHash(password, out byte[] hash, out byte[] salt);
-
-        var user = new User
-        {
-            Username = username,
-            Email = email,
-            PasswordHash = hash,
-            PasswordSalt = salt
-        };
-
-        _context.Users.Add(user);
-        _context.SaveChanges();
-
-        return RedirectToAction("Index", "Home");
+        // Eğer kullanıcı varsa, hata mesajı ekle ve sayfayı tekrar yükle
+        ModelState.AddModelError(string.Empty, "Bu kullanıcı adı zaten alınmış. Lütfen başka bir ad deneyin.");
+        return View();
     }
 
+    // 2. KONTROL: Bu e-posta zaten kullanılıyor mu? (Opsiyonel ama önerilir)
+    var isEmailExists = _context.Users.Any(u => u.Email == email);
+    if (isEmailExists)
+    {
+        ModelState.AddModelError(string.Empty, "Bu e-posta adresi zaten kayıtlı.");
+        return View();
+    }
+
+    // Kullanıcı adı ve e-posta müsaitse kayıt işlemlerine geç:
+    HashHelper.CreatePasswordHash(password, out byte[] hash, out byte[] salt);
+
+    var user = new User
+    {
+        Username = username,
+        Email = email,
+        PasswordHash = hash,
+        PasswordSalt = salt
+    };
+
+    _context.Users.Add(user);
+    _context.SaveChanges();
+
+    return RedirectToAction("Login", "Account"); // Kayıt sonrası direkt Login'e yönlendir
+}
     [HttpGet]
     public IActionResult Login() => View();
 
@@ -80,6 +97,62 @@ public class AccountController : Controller
 
         return RedirectToAction("Index", "Home");
     }
+
+    [HttpGet]
+    public IActionResult Vault() 
+    {
+      var username = User.Identity?.Name;
+      var user = _context.Users.FirstOrDefault(u => u.Username == username);
+      return View(user);
+    }
+
+[HttpPost]
+public IActionResult UpdateVault(string tcNo, string phoneNumber, string iban, string creditCard, string ipAddress)
+{
+    // Giriş yapmış kullanıcıyı veritabanından çekiyoruz
+    var username = User.Identity?.Name;
+    var user = _context.Users.FirstOrDefault(u => u.Username == username);
+
+    if (user != null)
+    {
+        // 1. TC No Kontrolü
+        if (!System.Text.RegularExpressions.Regex.IsMatch(tcNo ?? "", KriptoProje.Data.RegexService.TcNoPattern))
+            ModelState.AddModelError("TcNo", "Geçersiz T.C. Kimlik Numarası!");
+
+        // 2. Telefon Kontrolü
+        if (!System.Text.RegularExpressions.Regex.IsMatch(phoneNumber ?? "", KriptoProje.Data.RegexService.PhonePattern))
+            ModelState.AddModelError("PhoneNumber", "Geçersiz Telefon Formatı (05XXXXXXXXX)!");
+
+        // 3. IBAN Kontrolü
+        if (!System.Text.RegularExpressions.Regex.IsMatch(iban ?? "", KriptoProje.Data.RegexService.IbanPattern))
+            ModelState.AddModelError("Iban", "Geçersiz IBAN (TR ile başlamalı ve 24 rakam olmalı)!");
+
+        // 4. Kredi Kartı Kontrolü
+        if (!System.Text.RegularExpressions.Regex.IsMatch(creditCard ?? "", KriptoProje.Data.RegexService.CreditCardPattern))
+            ModelState.AddModelError("CreditCard", "Geçersiz Kredi Kartı (16 hane olmalı)!");
+
+        // 5. IP Adresi Kontrolü
+        if (!System.Text.RegularExpressions.Regex.IsMatch(ipAddress ?? "", KriptoProje.Data.RegexService.IpPattern))
+            ModelState.AddModelError("IpAddress", "Geçersiz IPv4 Adresi!");
+
+        // Eğer Regex kontrollerinden geçtiyse veritabanını güncelle
+        if (ModelState.IsValid)
+        {
+            user.TcNo = tcNo;
+            user.PhoneNumber = phoneNumber;
+            user.Iban = iban;
+            user.CreditCard = creditCard;
+            user.IpAddress = ipAddress;
+
+            _context.SaveChanges();
+            TempData["Success"] = "Veriler Regex kontrolünden geçerek başarıyla kaydedildi.";
+            return RedirectToAction("Vault");
+        }
+    }
+
+    // Eğer hata varsa (ModelState.IsValid değilse), verileri kaybetmeden sayfaya geri döner
+    return View("Vault", user);
+}
 
     [HttpPost]
     public async Task<IActionResult> Logout()

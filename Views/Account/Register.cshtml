@@ -11,6 +11,20 @@
                     <small class="text-muted">Verileriniz SHA-256 ile şifrelenerek saklanır.</small>
                 </div>
                 <div class="card-body p-4 pt-2">
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <ul class="mb-0">
+                                @foreach (var modelError in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li><i class="bi bi-exclamation-circle-fill me-2"></i>@modelError.ErrorMessage</li>
+                                }
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
                     <form id="authForm" asp-action="Register" method="post">
                         <div class="mb-3">
                             <label class="form-label fw-bold">Kullanıcı Adı</label>
@@ -27,7 +41,7 @@
                             <div class="input-group">
                                 <input class="form-control" id="passwordInput" name="password" type="password" placeholder="Güçlü bir şifre seçin" required />
                                 <button class="btn btn-outline-secondary" type="button" id="togglePasswordBtn">
-                                    <i class="bi bi-eye" id="togglePasswordIcon" style="color: #64748B;"></i>
+                                    <i class="bi bi-eye" id="togglePasswordIcon"></i>
                                 </button>
                             </div>
                         </div>
@@ -39,11 +53,6 @@
                         </div>
                     </form>
                 </div>
-                <div class="card-footer text-center py-3">
-                    <div class="small text-muted text-uppercase" style="font-size: 0.7rem;">
-                        Kriptografi Ödevi - Güvenli Veri Yönetimi
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -52,7 +61,6 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Şifre Göster/Gizle
             const togglePasswordBtn = document.getElementById('togglePasswordBtn');
             const passwordInput = document.getElementById('passwordInput');
             const togglePasswordIcon = document.getElementById('togglePasswordIcon');
@@ -61,13 +69,11 @@
                 togglePasswordBtn.addEventListener('click', function () {
                     const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
                     passwordInput.setAttribute('type', type);
-                    // İkonu değiştir
                     togglePasswordIcon.classList.toggle('bi-eye');
                     togglePasswordIcon.classList.toggle('bi-eye-slash');
                 });
             }
 
-            // Form Submit Spinner
             const authForm = document.getElementById('authForm');
             const submitBtn = document.getElementById('submitBtn');
 
