@@ -14,4 +14,5 @@ public class User
     public string? Iban { get; set; }
     public string? CreditCard { get; set; }
     public string? IpAddress { get; set; }
+    public string? IntegrityHash { get; set; }
 }

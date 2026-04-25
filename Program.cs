@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore; // Bunu ekle
 using KriptoProje.Data;              // Bunu ekle
+using KriptoProje.Services;          // Kriptografi servisi için
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<CryptoService>();
 
 builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
