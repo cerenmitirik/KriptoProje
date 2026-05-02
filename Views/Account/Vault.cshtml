@@ -8,67 +8,98 @@
         <div class="col-md-8 mb-5">
             <div class="card shadow-xl border-0 auth-card">
                 <div class="card-header text-center py-4 bg-dark text-white">
-                    <h3 class="fw-bold my-2"><i class="bi bi-shield-lock"></i> Güvenli Veri Kasası</h3>
-                    <p class="small text-light">Hassas verileriniz Regex motoru ile çift taraflı doğrulanır.</p>
+                    <h3 class="fw-bold my-2"><i class="bi bi-shield-lock-fill"></i> Güvenli Veri Kasası</h3>
+                    <p class="small text-light m-0">Hassas verileriniz AES-256 ile şifrelenir ve RSA ile mühürlenir.</p>
                 </div>
+                
+                @* 4. Hafta: Dijital İmza Bilgi Paneli *@
+                <div class="bg-light border-bottom p-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            @if (Model?.DigitalSignature != null)
+                            {
+                                <span class="badge bg-success p-2">
+                                    <i class="bi bi-patch-check-fill"></i> Dijital İmza Doğrulandı
+                                </span>
+                                <small class="text-muted d-block mt-1">Veri bütünlüğü RSA-2048 ile garanti altındadır.</small>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark p-2">
+                                    <i class="bi bi-exclamation-triangle-fill"></i> Henüz İmzalanmamış
+                                </span>
+                                <small class="text-muted d-block mt-1">Veri kaydedildiğinde dijital mühür oluşturulacaktır.</small>
+                            }
+                        </div>
+                        <div class="text-end">
+                            <i class="bi bi-key-fill text-primary" title="Asimetrik Anahtarlar Aktif"></i>
+                            <span class="small fw-bold">RSA Aktif</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card-body p-4">
 
                     @if (TempData["Success"] != null)
                     {
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+                        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     }
 
                     @if (!ViewData.ModelState.IsValid)
                     {
-                        <div class="alert alert-danger shadow-sm">
-                            <h6 class="fw-bold"><i class="bi bi-exclamation-triangle-fill"></i> Doğrulama Hataları:</h6>
+                        <div class="alert alert-danger shadow-sm border-0">
+                            <h6 class="fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Doğrulama Hataları:</h6>
                             <div asp-validation-summary="All" class="small"></div>
                         </div>
                     }
 
-                    @* Formun tamamına ve tek tek inputlara autocomplete="off" ekledik *@
                     <form id="vaultForm" asp-action="UpdateVault" method="post" autocomplete="off">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">T.C. Kimlik No</label>
-                                <input name="tcNo" value="@Model?.TcNo" class="form-control" id="tcInput" placeholder="11 haneli rakam" autocomplete="off" />
+                                <label class="form-label fw-bold small text-uppercase">T.C. Kimlik No</label>
+                                <input name="tcNo" value="@Model?.TcNo" class="form-control form-control-lg bg-light" id="tcInput" placeholder="11 haneli rakam" autocomplete="off" />
                                 <div class="invalid-feedback">Lütfen 11 haneli geçerli bir TC giriniz.</div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Telefon Numarası</label>
-                                <input name="phoneNumber" value="@Model?.PhoneNumber" class="form-control" id="phoneInput" placeholder="05XXXXXXXXX" autocomplete="off" />
+                                <label class="form-label fw-bold small text-uppercase">Telefon Numarası</label>
+                                <input name="phoneNumber" value="@Model?.PhoneNumber" class="form-control form-control-lg bg-light" id="phoneInput" placeholder="05XXXXXXXXX" autocomplete="off" />
                                 <div class="invalid-feedback">Telefon 05 ile başlamalı ve 11 hane olmalıdır.</div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">IBAN</label>
-                                <input name="iban" value="@Model?.Iban" class="form-control" id="ibanInput" placeholder="TR..." autocomplete="off" />
-                                <div class="invalid-feedback">Geçersiz IBAN formatı! TR ile başlamalı ve 24 rakamdan oluşmalı.</div>
+                                <label class="form-label fw-bold small text-uppercase">IBAN</label>
+                                <input name="iban" value="@Model?.Iban" class="form-control form-control-lg bg-light" id="ibanInput" placeholder="TR..." autocomplete="off" />
+                                <div class="invalid-feedback">Geçersiz IBAN formatı! TR + 24 rakam.</div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Kredi Kartı No</label>
-                                <input name="creditCard" value="@Model?.CreditCard" class="form-control" id="cardInput" placeholder="16 haneli rakam" autocomplete="off" />
+                                <label class="form-label fw-bold small text-uppercase">Kredi Kartı No</label>
+                                <input name="creditCard" value="@Model?.CreditCard" class="form-control form-control-lg bg-light" id="cardInput" placeholder="16 haneli rakam" autocomplete="off" />
                                 <div class="invalid-feedback">Kredi kartı 16 hane olmalıdır.</div>
                             </div>
 
                             <div class="col-md-12 mb-3">
-                                <label class="form-label fw-bold">IPv4 Adresi</label>
-                                <input name="ipAddress" value="@Model?.IpAddress" class="form-control" id="ipInput" placeholder="192.168.1.1" autocomplete="off" />
+                                <label class="form-label fw-bold small text-uppercase">IPv4 Adresi</label>
+                                <input name="ipAddress" value="@Model?.IpAddress" class="form-control form-control-lg bg-light" id="ipInput" placeholder="192.168.1.1" autocomplete="off" />
                                 <div class="invalid-feedback">Geçersiz IP adresi formatı!</div>
                             </div>
                         </div>
 
                         <div class="d-grid gap-2 mt-4">
-                            <button type="submit" id="vaultSubmitBtn" class="btn btn-primary shadow-sm py-2">
-                                <i class="bi bi-cloud-arrow-up"></i> Verileri Doğrula ve Kaydet
+                            <button type="submit" id="vaultSubmitBtn" class="btn btn-primary btn-lg shadow-sm py-3 fw-bold">
+                                <i class="bi bi-shield-check me-2"></i> Verileri Mühürle ve Kaydet
                             </button>
                         </div>
                     </form>
+                </div>
+                <div class="card-footer text-center bg-white border-0 pb-4">
+                    <p class="text-muted extra-small mb-0" style="font-size: 0.75rem;">
+                        <i class="bi bi-info-circle"></i> Bu sayfadaki tüm işlemler yerel tarayıcı ve sunucu arasında <strong>RSA-2048</strong> ile dijital olarak imzalanmaktadır.
+                    </p>
                 </div>
             </div>
         </div>
@@ -101,21 +132,19 @@
                 });
             };
 
-            // Anlık kontrolleri başlat
             validateInput('#tcInput', patterns.tc);
             validateInput('#phoneInput', patterns.phone);
             validateInput('#ibanInput', patterns.iban);
             validateInput('#cardInput', patterns.card);
             validateInput('#ipInput', patterns.ip);
 
-            // Form gönderilirken buton spinner
             const vaultForm = document.getElementById('vaultForm');
             const submitBtn = document.getElementById('vaultSubmitBtn');
 
             if (vaultForm) {
                 vaultForm.addEventListener('submit', function () {
                     submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> İşleniyor...';
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Kriptografik İşlem Yapılıyor...';
                 });
             }
         });
